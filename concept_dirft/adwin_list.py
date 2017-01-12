@@ -5,12 +5,12 @@ from concept_dirft.adwin_list_item import AdwinListItem
 
 
 class AdwinList:
-    def __init__(self, max_bucket_element=5):
+    def __init__(self, max_buckets=5):
         """
-        :param max_bucket_element:max number of element in each bucket
+        :param max_buckets:max number of element in each bucket
         """
         self.count = 0
-        self.max_bucket_element = max_bucket_element
+        self.max_buckets = max_buckets
         self.head = None
         self.tail = None
         self.add_to_head()
@@ -18,7 +18,7 @@ class AdwinList:
     def add_to_head(self):
         """Add the object at the beginning of the window
         """
-        self.head = AdwinListItem(self.max_bucket_element, next=self.head)
+        self.head = AdwinListItem(self.max_buckets, next=self.head)
         if self.tail is None:
             self.tail = self.head
         self.count += 1
@@ -26,7 +26,7 @@ class AdwinList:
     def add_to_tail(self):
         """Add the object at the end of the window
         """
-        self.tail = AdwinListItem(self.max_bucket_element, previous=self.tail)
+        self.tail = AdwinListItem(self.max_buckets, previous=self.tail)
         if self.head is None:
             self.head = self.tail
         self.count += 1
