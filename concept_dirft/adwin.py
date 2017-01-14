@@ -1,18 +1,25 @@
 """Adaptive Sliding Window"""
+
+# Author: Yuhao ZHAO
 from concept_dirft.adwin_list import AdwinList
+from math import log, sqrt, fabs
 
 
 class Adwin():
-    def __init__(self, delta=0.01, max_buckets=5, min_clock=32):
+    def __init__(self, delta=0.01, max_buckets=5, min_clock=32, min_length_window=10, min_length_sub_window=5):
         """
-        :param delta:confidence value
-        :param max_buckets:max number of buckets which have same number of original date in one row
-        :param min_clock:min number of new data to reduce window and detect change
+        :param delta: confidence value
+        :param max_buckets: max number of buckets which have same number of original date in one row
+        :param min_clock: min number of new data for starting to reduce window and detect change
+        :param min_length_window: min window's length for starting to reduce window and detect change
+        :param min_length_sub_window: min sub window's length for starting to reduce window and detect change
         """
-        self.delta = delta,
+        self.delta = delta
         self.max_buckets = max_buckets
         self.min_clock = min_clock
-        self.count = 0
+        self.min_length_window = min_length_window
+        self.min_length_sub_window = min_length_sub_window
+        self.time = 0
         self.width = 0
         self.total = 0
         self.variance = 0
@@ -22,9 +29,12 @@ class Adwin():
         self.list_row_buckets = AdwinList(self.max_buckets)
 
     def set_input(self, value):
-        self.count += 1
+        self.time += 1
         # Insert the new element
         self.__insert_element(value)
+        bucket_deleted = False
+        # Reduce window
+        return self.__reduce_window()
 
     def __insert_element(self, value):
         self.width += 1
@@ -74,3 +84,68 @@ class Adwin():
                 break
             cursor = cursor.next
             i += 1
+
+    def __reduce_window(self):
+        """
+        :return: boolean: whether has changed
+        """
+        is_changed = False
+        if self.time % self.min_clock == 0 and self.width > self.min_length_window:
+            is_reduced_width = True
+            while is_reduced_width:
+                is_reduced_width = False
+                is_exit = False
+                n0, n1 = 0, self.width
+                u0, u1 = 0, self.total
+
+                cursor = self.list_row_buckets.tail
+                i = self.last_bucket_row
+                while (not is_exit) and (cursor is not None):
+                    for k in range(cursor.bucket_size_row):
+                        # In case of n1 equals 0
+                        if i == 0 and k == cursor.bucket_size_row - 1:
+                            is_exit = True
+                            break
+
+                        n0, n1 = n0 + pow(2, i), n1 - pow(2, i)
+                        u0, u1 = u0 + cursor.bucket_total[k], u1 - cursor.bucket_total[k]
+                        diff_value = (u0 / n0) - (u1 / n1)
+                        if (n1 > self.min_length_sub_window + 1 and n0 > self.min_length_sub_window + 1) and \
+                                self.__reduce_expression(n0, n1, diff_value):
+                            is_reduced_width, is_changed = True, True
+                            if self.width > 0:
+                                n0 -= self.__delete_element()
+                                is_exit = True
+                                break
+                    cursor = cursor.previous
+                    i -= 1
+        return is_changed
+
+    def __reduce_expression(self, n0, n1, diff_value):
+        n = self.width
+        m = 1 / (1 / n0 + 1 / n1)
+        delta_ = self.delta / self.width
+        epsilon = sqrt(1 / (2 * m) * log(4 / delta_))
+        return fabs(diff_value) > epsilon
+
+    def __delete_element(self):
+        """Remove a bucket from tail of window
+        :return: Number of elements to be deleted
+        """
+        node = self.list_row_buckets.tail
+        deleted_number = pow(2, self.last_bucket_row)
+        self.width -= deleted_number
+        self.total -= node.bucket_total[0]
+        deleted_element_mean = node.bucket_total[0] / deleted_number
+
+        internal_variance = node.bucket_variance[0] + deleted_number * self.width * (
+            (deleted_element_mean - self.total / self.width) * (deleted_element_mean - self.total / self.width)
+        ) / (deleted_number + self.width)
+        self.variance -= internal_variance
+        # Delete bucket
+        node.compress_buckets_row(1)
+        self.bucket_number -= 1
+        if node.bucket_size_row == 0:
+            self.list_row_buckets.remove_from_tail()
+            self.last_bucket_row -= 1
+        return deleted_number
