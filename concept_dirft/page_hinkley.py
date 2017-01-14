@@ -1,6 +1,7 @@
 """Page-Hinkley"""
 
 
+# Author: Yuqing WEI
 class PageHinkley:
     def __init__(self, delta=0.005, lamda=50):
         self.x_mean = 0
