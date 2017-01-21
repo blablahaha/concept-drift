@@ -6,7 +6,7 @@ from math import log, sqrt, fabs
 
 
 class Adwin():
-    def __init__(self, delta=0.01, max_buckets=5, min_clock=32, min_length_window=10, min_length_sub_window=5):
+    def __init__(self, delta=0.001, max_buckets=5, min_clock=32, min_length_window=10, min_length_sub_window=5):
         """
         :param delta: confidence value
         :param max_buckets: max number of buckets which have same number of original date in one row
