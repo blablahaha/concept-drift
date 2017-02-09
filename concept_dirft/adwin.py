@@ -5,8 +5,8 @@ from concept_dirft.adwin_list import AdwinList
 from math import log, sqrt, fabs
 
 
-class Adwin():
-    def __init__(self, delta=0.001, max_buckets=5, min_clock=32, min_length_window=10, min_length_sub_window=5):
+class Adwin:
+    def __init__(self, delta=0.002, max_buckets=5, min_clock=32, min_length_window=10, min_length_sub_window=5):
         """
         :param delta: confidence value
         :param max_buckets: max number of buckets which have same number of original date in one row
@@ -21,8 +21,8 @@ class Adwin():
         self.min_length_sub_window = min_length_sub_window
         self.time = 0
         self.width = 0
-        self.total = 0
-        self.variance = 0
+        self.total = 0.0
+        self.variance = 0.0
         self.bucket_number = 0
         # last_bucket_row: defines the max number of merged
         self.last_bucket_row = 0
@@ -32,22 +32,21 @@ class Adwin():
         self.time += 1
         # Insert the new element
         self.__insert_element(value)
-        bucket_deleted = False
         # Reduce window
         return self.__reduce_window()
 
     def __insert_element(self, value):
         self.width += 1
-        internal_variance = 0
         # Insert the new bucket
         self.list_row_buckets.head.insert_bucket(value, 0)
         self.bucket_number += 1
-        # Calculate the internal_variance
+        # Calculate the incremental variance
+        incremental_variance = 0
         if self.width > 1:
-            internal_variance = (self.width - 1) * (
+            incremental_variance = (self.width - 1) * (
                 (value - self.total / (self.width - 1)) * (value - self.total / (self.width - 1))
             ) / self.width
-        self.variance += internal_variance
+        self.variance += incremental_variance
         self.total += value
         self.__compress_buckets()
 
@@ -73,9 +72,10 @@ class Adwin():
                 n2 = pow(2, i)
                 u1 = cursor.bucket_total[0] / n1
                 u2 = cursor.bucket_total[1] / n2
-                internal_variance = n1 * n2 * (u1 - u2) * (u1 - u2) / (n1 + n2)
+
+                external_variance = n1 * n2 * (u1 - u2) * (u1 - u2) / (n1 + n2)
                 next_node.insert_bucket(cursor.bucket_total[0] + cursor.bucket_total[1],
-                                        cursor.bucket_variance[0] + cursor.bucket_variance[1] + internal_variance)
+                                        cursor.bucket_variance[0] + cursor.bucket_variance[1] + external_variance)
                 self.bucket_number += 1
                 cursor.compress_buckets_row(2)
                 if next_node.bucket_size_row <= self.max_buckets:
@@ -107,10 +107,12 @@ class Adwin():
                             is_exit = True
                             break
 
-                        n0, n1 = n0 + pow(2, i), n1 - pow(2, i)
-                        u0, u1 = u0 + cursor.bucket_total[k], u1 - cursor.bucket_total[k]
+                        n0 += pow(2, i)
+                        n1 -= pow(2, i)
+                        u0 += cursor.bucket_total[k]
+                        u1 -= cursor.bucket_total[k]
                         diff_value = (u0 / n0) - (u1 / n1)
-                        if (n1 > self.min_length_sub_window + 1 and n0 > self.min_length_sub_window + 1) and \
+                        if n0 > self.min_length_sub_window + 1 and n1 > self.min_length_sub_window + 1 and \
                                 self.__reduce_expression(n0, n1, diff_value):
                             is_reduced_width, is_changed = True, True
                             if self.width > 0:
@@ -122,10 +124,10 @@ class Adwin():
         return is_changed
 
     def __reduce_expression(self, n0, n1, diff_value):
-        n = self.width
-        m = 1 / (1 / n0 + 1 / n1)
-        delta_ = self.delta / self.width
-        epsilon = sqrt(1 / (2 * m) * log(4 / delta_))
+        m = 1 / (n0 - self.min_length_sub_window + 1) + 1 / (n1 - self.min_length_sub_window + 1)
+        d = log(2 * log(self.width) / self.delta)
+        variance = self.variance / self.width
+        epsilon = sqrt(2 * m * variance * d) + 2 / 3 * m * d
         return fabs(diff_value) > epsilon
 
     def __delete_element(self):
@@ -138,10 +140,10 @@ class Adwin():
         self.total -= node.bucket_total[0]
         deleted_element_mean = node.bucket_total[0] / deleted_number
 
-        internal_variance = node.bucket_variance[0] + deleted_number * self.width * (
+        incremental_variance = node.bucket_variance[0] + deleted_number * self.width * (
             (deleted_element_mean - self.total / self.width) * (deleted_element_mean - self.total / self.width)
         ) / (deleted_number + self.width)
-        self.variance -= internal_variance
+        self.variance -= incremental_variance
         # Delete bucket
         node.compress_buckets_row(1)
         self.bucket_number -= 1
