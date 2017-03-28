@@ -1,4 +1,4 @@
-##ADWIN:  ADaptive sliding WINdow algorithm
+## ADWIN:  ADaptive sliding WINdow algorithm
 
 ADWIN is a change detector and estimator that solves in a well-specified way the problem of tracking the average of a stream of bits or real-valued numbers. 
 
@@ -9,7 +9,7 @@ class concept_dirft.adwin.Adwin
  (delta=0.002, max_buckets=5, min_clock=32, min_length_window=10, min_length_sub_window=5)
 ```
 | Parameters: | |
-|:-------------:|:------|
+| ------------- | ------------- |
 | delta: | Confidence value |
 | max_buckets: | Max number of buckets which have same number of original date in one row |
 | min_clock | Min number of new data for starting to reduce window and detect change |
@@ -44,14 +44,14 @@ for i in range(1000):
         print(i)
 ```
 
-##Test
+## Test
 * Used the **elecNormNew** dataset;
 * Used **GaussianNB** as based classification;
 * Used **accuracy_score** as input date for change detector;
 * Used the **prequential** evaluation;
 
 	<p align="center">
-	  <img src="image/comparison.png" style="max-width: 500px;"/>
+	  <img src="image/comparison.png" style="max-width: 300px;"/>
 	</p>
 
 	```
