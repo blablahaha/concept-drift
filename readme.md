@@ -1,4 +1,4 @@
-## ADWIN:  ADaptive sliding WINdow algorithm
+### ADWIN:  ADaptive sliding WINdow algorithm
 
 ADWIN is a change detector and estimator that solves in a well-specified way the problem of tracking the average of a stream of bits or real-valued numbers. 
 
@@ -23,12 +23,12 @@ set_input(value)
 ```
 > Set input value to the drift detector - ADWIN.
 
->| Parameters: | |
-|:-------------:|:------|
+| Parameters: | |
+|-------------|------|
 | Value: | Input value |
 
->| Return: | |
-|:-------------:|:------|
+| Return: | |
+|-------------|------|
 | Boolean | Whether has drift |
 
 **Example**
@@ -37,28 +37,24 @@ set_input(value)
 from concept_dirft.adwin import Adwin
 
 adwin = Adwin()
-
-print("Here is rift")
 for i in range(1000):
     if adwin.set_input(i):
-        print(i)
+	print("Here is a drift")
 ```
 
-## Test
-* Used the **elecNormNew** dataset;
-* Used **GaussianNB** as based classification;
-* Used **accuracy_score** as input date for change detector;
-* Used the **prequential** evaluation;
-
+### Test
+ Used the **elecNormNew** dataset;<br>
+ Used **GaussianNB** as based classification;<br>
+ Used **accuracy_score** as input date for change detector;<br>
+ Used the **prequential** evaluation;
 	<p align="center">
 	  <img src="image/comparison.png" style="max-width: 300px;"/>
 	</p>
+```
+GaussianNB :
+Mean acc within the window 1000: 0.7289912189511405
 
-	```
-	GaussianNB :
-	Mean acc within the window 1000: 0.7289912189511405
-	
-	ADWIN :
-	Drift detection: 139
-	Mean acc within the window 1000: 0.7496421003738032
-	```
+ADWIN :
+Drift detection: 139
+Mean acc within the window 1000: 0.7496421003738032
+```
