@@ -1,4 +1,4 @@
-### ADWIN:  ADaptive sliding WINdow algorithm
+## ADWIN:  ADaptive sliding WINdow algorithm
 
 ADWIN is a change detector and estimator that solves in a well-specified way the problem of tracking the average of a stream of bits or real-valued numbers. 
 
@@ -6,7 +6,7 @@ ADWIN keeps a variable-length window of recently seen items, with the property t
 
 ```python
 class concept_dirft.adwin.Adwin
- (delta=0.002, max_buckets=5, min_clock=32, min_length_window=10, min_length_sub_window=5)
+	(delta=0.002, max_buckets=5, min_clock=32, min_length_window=10, min_length_sub_window=5)
 ```
 | Parameters: | |
 | ------------- | ------------- |
@@ -42,17 +42,35 @@ for i in range(1000):
 	print("Here is a drift")
 ```
 
-### Test
+## Page-Hinckley TestThe Page-Hinkley test which is a sequential adaptation of the detection of an abrupt change of the average of a Gaussian signal. It allows efficient detection of changes in the normal behaviour of a process which is established by a model.
+
+```python
+ class concept_dirft.page_hinkley.PageHinkley
+ 	(delta_=0.005, lambda_=50, alpha_=1 - 0.0001)
+```
+| Parameters: | |
+| ------------- | ------------- |
+| delta_: | Magnitude threshold; the minimal absolute value of the amplitude of the jump to be detected |
+| lambda_: | Detection threshold |
+| alpha_ | Adaption variable for lambda adjustment |
+
+## Test
  Used the **elecNormNew** dataset;<br>
  Used **GaussianNB** as based classification;<br>
  Used **accuracy_score** as input date for change detector;<br>
  Used the **prequential** evaluation;
-	<p align="center">
-	  <img src="image/comparison.png" style="max-width: 300px;"/>
-	</p>
+
+<p align="center">
+  <img src="image/comparison.png" width="400"/>
+</p>
+
 ```
 GaussianNB :
 Mean acc within the window 1000: 0.7289912189511405
+
+Page-Hinkley :
+Drift detection: 8
+Mean acc within the window 1000: 0.7342849306584686
 
 ADWIN :
 Drift detection: 139

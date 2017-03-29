@@ -6,6 +6,7 @@ from sklearn.naive_bayes import GaussianNB
 
 from classifier.detector_classifier import DetectorClassifier
 from concept_dirft.adwin import Adwin
+from concept_dirft.page_hinkley import PageHinkley
 from evaluation.prequential import prequential
 
 
@@ -29,9 +30,10 @@ if __name__ == '__main__':
 
     clfs = [
         GaussianNB(),
+        DetectorClassifier(GaussianNB(), PageHinkley(), np.unique(y)),
         DetectorClassifier(GaussianNB(), Adwin(), np.unique(y))
     ]
-    clfs_label = ["GaussianNB", "ADWIN"]
+    clfs_label = ["GaussianNB", "Page-Hinkley", "ADWIN"]
 
     plt.title("Accuracy (exact match)")
     plt.xlabel("Instances")
