@@ -1,7 +1,7 @@
 """Adaptive Sliding Window"""
 
 # Author: Yuhao ZHAO
-from concept_dirft.adwin_list import AdwinList
+from concept_drift.adwin_list import AdwinList
 from math import log, sqrt, fabs
 
 

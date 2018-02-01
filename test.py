@@ -5,8 +5,8 @@ from sklearn import preprocessing
 from sklearn.naive_bayes import GaussianNB
 
 from classifier.detector_classifier import DetectorClassifier
-from concept_dirft.adwin import Adwin
-from concept_dirft.page_hinkley import PageHinkley
+from concept_drift.adwin import Adwin
+from concept_drift.page_hinkley import PageHinkley
 from evaluation.prequential import prequential
 
 

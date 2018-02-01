@@ -1,7 +1,7 @@
 """Add new bucket at head of window (which has smaller number of merged),
 remove old bucket from tail of window (which has bigger number of merged)
 """
-from concept_dirft.adwin_list_item import AdwinListItem
+from concept_drift.adwin_list_item import AdwinListItem
 
 
 class AdwinList:
