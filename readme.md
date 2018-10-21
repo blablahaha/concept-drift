@@ -6,7 +6,7 @@ Based on paper:
 
 ```python
 class concept_drift.adwin.AdWin(
-	delta=0.002, max_buckets=5, min_clock=32, min_win_len=10, min_sub_win_len=5
+    delta=0.002, max_buckets=5, min_clock=32, min_win_len=10, min_sub_win_len=5
 )
 ```
 
@@ -38,7 +38,7 @@ from concept_drift.adwin import AdWin
 adwin = AdWin()
 for i in range(1000):
     if adwin.set_input(i):
-	print("Here is a drift")
+        print("Here is a drift")
 ```
 
 ## Page-Hinckley Test
@@ -48,9 +48,10 @@ Based on Chapter 5.1:
 
 ```python
 class concept_drift.page_hinkley.PageHinkley(
-	delta_=0.005, lambda_=50, alpha_=1 - 0.0001
+    delta_=0.005, lambda_=50, alpha_=1 - 0.0001
 )
 ```
+
 | Parameters | |
 | ------------- | ------------- |
 | delta\_ | Magnitude of changes that are allowed |
