@@ -5,7 +5,7 @@ from sklearn import preprocessing
 from sklearn.naive_bayes import GaussianNB
 
 from classifier.detector_classifier import DetectorClassifier
-from concept_drift.adwin import Adwin
+from concept_drift.adwin import AdWin
 from concept_drift.page_hinkley import PageHinkley
 from evaluation.prequential import prequential
 
@@ -31,16 +31,16 @@ if __name__ == '__main__':
     clfs = [
         GaussianNB(),
         DetectorClassifier(GaussianNB(), PageHinkley(), np.unique(y)),
-        DetectorClassifier(GaussianNB(), Adwin(), np.unique(y))
+        DetectorClassifier(GaussianNB(), AdWin(), np.unique(y))
     ]
-    clfs_label = ["GaussianNB", "Page-Hinkley", "ADWIN"]
+    clfs_label = ["GaussianNB", "Page-Hinkley", "AdWin"]
 
     plt.title("Accuracy (exact match)")
     plt.xlabel("Instances")
     plt.ylabel("Accuracy")
 
     for i in range(len(clfs)):
-        print("\n{} :".format(clfs_label[i]))
+        print("\n{}:".format(clfs_label[i]))
         with np.errstate(divide='ignore', invalid='ignore'):
             y_pre, time = prequential(X, y, clfs[i], n_train)
         if clfs[i].__class__.__name__ == "DetectorClassifier":
