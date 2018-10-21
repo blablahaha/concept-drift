@@ -10,19 +10,19 @@ from concept_drift.adwin_buckets import AdwinRowBucketList
 
 
 class AdWin:
-    def __init__(self, delta=0.002, max_buckets=5, min_clock=32, min_window_len=10, min_sub_window_len=5):
+    def __init__(self, delta=0.002, max_buckets=5, min_clock=32, min_win_len=10, min_sub_win_len=5):
         """
         :param delta: Confidence value
         :param max_buckets: Max number of buckets within one bucket row
         :param min_clock: Min number of new data for starting to reduce window and detect change
-        :param min_window_len: Min window length for starting to reduce window and detect change
-        :param min_sub_window_len: Minimum sub-window length
+        :param min_win_len: Min window length for starting to reduce window and detect change
+        :param min_sub_win_len: Min sub-window length, which is split from whole window
         """
         self.delta = delta
         self.max_buckets = max_buckets
         self.min_clock = min_clock
-        self.min_window_len = min_window_len
-        self.min_sub_window_len = min_sub_window_len
+        self.min_win_len = min_win_len
+        self.min_sub_win_len = min_sub_win_len
 
         # Time is used for comparison with min_clock parameter
         self.time = 0
@@ -128,7 +128,7 @@ class AdWin:
         :return: boolean: Whether has changed
         """
         is_changed = False
-        if self.time % self.min_clock == 0 and self.window_len > self.min_window_len:
+        if self.time % self.min_clock == 0 and self.window_len > self.min_win_len:
             is_reduced_width = True
             while is_reduced_width:
                 is_reduced_width = False
@@ -154,7 +154,7 @@ class AdWin:
                         diff_value = (sum_0 / n_0) - (sum_1 / n_1)
 
                         # Minimum sub window length is matching
-                        if n_0 > self.min_sub_window_len + 1 and n_1 > self.min_sub_window_len + 1:
+                        if n_0 > self.min_sub_win_len + 1 and n_1 > self.min_sub_win_len + 1:
                             # Remove oldest bucket if there is a concept drift
                             if self.__reduce_expression(n_0, n_1, diff_value):
                                 is_reduced_width, is_changed = True, True
@@ -178,7 +178,7 @@ class AdWin:
         :return: true if difference of mean values is higher than epsilon_cut
         """
         # Harmonic mean of n0 and n1
-        m = 1 / (n_0 - self.min_sub_window_len + 1) + 1 / (n_1 - self.min_sub_window_len + 1)
+        m = 1 / (n_0 - self.min_sub_win_len + 1) + 1 / (n_1 - self.min_sub_win_len + 1)
         d = log(2 * log(self.window_len) / self.delta)
         variance_window = self.window_variance / self.window_len
         epsilon_cut = sqrt(2 * m * variance_window * d) + 2 / 3 * m * d

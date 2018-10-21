@@ -1,20 +1,22 @@
-## ADWIN:  ADaptive sliding WINdow algorithm
+## AdWin:  ADaptive sliding WINdow algorithm
 
 Based on paper: 
 
 *Bifet and R. Gavalda. 2007. Learning from Time-Changing Data with Adaptive Windowing*
 
 ```python
-class concept_drift.adwin.AdWin(delta=0.002, max_buckets=5, min_clock=32, min_window_len=10, min_sub_window_len=5)
+class concept_drift.adwin.AdWin(
+	delta=0.002, max_buckets=5, min_clock=32, min_win_len=10, min_sub_win_len=5
+)
 ```
 
-| Parameters: | |
+| Parameters | |
 | ------------- | ------------- |
-| delta: |Confidence value |
-| max_buckets: | Max number of buckets within one bucket row |
+| delta |Confidence value |
+| max_buckets | Max number of buckets within one bucket row |
 | min_clock | Min number of new data for starting to reduce window and detect change |
 | min\_window\_len | Min window length for starting to reduce window and detect change |
-| min\_sub\_window\_len | Minimum sub-window length |
+| min\_sub\_window\_len | Min sub-window length, which is split from whole window |
 
 **Methods**
 
@@ -25,8 +27,8 @@ set_input(value)
 
 |Type| Input - Output |
 |---|----|
-| Parameters: | Value: Input value |
-| Return: | Boolean: Whether has drift  |
+| Parameters | **value**: Input value |
+| Return | Boolean: Whether has drift  |
 
 **Example**
 
@@ -45,13 +47,15 @@ Based on Chapter 5.1:
 *Gama, J., Sebastião, R., & Rodrigues, P. P. (2013). On evaluating stream learning algorithms*
 
 ```python
-class concept_drift.page_hinkley.PageHinkley(delta_=0.005, lambda_=50, alpha_=1 - 0.0001)
+class concept_drift.page_hinkley.PageHinkley(
+	delta_=0.005, lambda_=50, alpha_=1 - 0.0001
+)
 ```
-| Parameters: | |
+| Parameters | |
 | ------------- | ------------- |
-| delta\_:  | Magnitude of changes that are allowed |
-| lambda\_: | Difference threshold |
-| alpha\_: | Adaption variable for lambda adjustment |
+| delta\_ | Magnitude of changes that are allowed |
+| lambda\_ | Difference threshold |
+| alpha\_ | Adaption variable for lambda adjustment |
 
 **Methods**
 
@@ -62,8 +66,8 @@ set_input(value)
 
 |Type| Input - Output |
 |---|----|
-| Parameters: | Value: Input value |
-| Return: | Boolean: Whether has drift  |
+| Parameters | **value**: Input value |
+| Return | Boolean: Whether has drift  |
 
 ## Test
  Used the **elecNormNew** dataset;<br>
